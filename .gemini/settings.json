@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "gg": {
+      "command": "node",
+      "args": ["c:/Users/winno/projects/gg-mcp-server/dist/server.js"]
+    }
+  }
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Garmin Golf Analytics</title>
+  <meta name="description" content="AI-powered driving range analytics for Garmin Approach R10/R50">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Top Navigation -->
+    <nav class="nav">
+      <div class="nav-brand">
+        <span class="nav-icon">⛳</span>
+        <span class="nav-title">Garmin Golf <span class="nav-accent">Analytics</span></span>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+        <button class="nav-tab" data-tab="sessions">Sessions</button>
+        <button class="nav-tab" data-tab="clubs">Clubs</button>
+        <button class="nav-tab" data-tab="chat">Ask AI</button>
+        <button class="nav-tab" data-tab="upload">Upload</button>
+        <button class="nav-tab" data-tab="features">Features</button>
+      </div>
+      <div class="nav-status" id="ollamaStatus">
+        <span class="status-dot offline"></span>
+        <span class="status-text">Checking AI...</span>
+      </div>
+    </nav>
+
+    <!-- Dashboard -->
+    <main class="content" id="tab-dashboard">
+      <div class="hero">
+        <h1>Your Golf Performance</h1>
+        <p class="hero-sub">AI-powered analysis of your Garmin driving range sessions</p>
+      </div>
+      <div class="stats-grid" id="dashStats">
+        <div class="stat-card">
+          <div class="stat-value" id="totalSessions">—</div>
+          <div class="stat-label">Sessions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalShots">—</div>
+          <div class="stat-label">Shots Tracked</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="clubCount">—</div>
+          <div class="stat-label">Clubs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="latestSession">—</div>
+          <div class="stat-label">Latest Session</div>
+        </div>
+      </div>
+      <div class="section">
+        <h2>Personal Bests</h2>
+        <div class="table-wrap" id="personalBests">
+          <p class="placeholder">Loading...</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sessions -->
+    <main class="content hidden" id="tab-sessions">
+      <h1>Practice Sessions</h1>
+      <div class="session-list" id="sessionList">
+        <p class="placeholder">Loading sessions...</p>
+      </div>
+      <div id="sessionDetail" class="hidden">
+        <button class="btn btn-ghost" id="backToSessions">← Back to Sessions</button>
+        <div id="sessionDetailContent"></div>
+      </div>
+    </main>
+
+    <!-- Clubs -->
+    <main class="content hidden" id="tab-clubs">
+      <h1>Club Performance</h1>
+      <div class="club-stats" id="clubStats">
+        <p class="placeholder">Loading club data...</p>
+      </div>
+    </main>
+
+    <!-- AI Chat -->
+    <main class="content hidden" id="tab-chat">
+      <div class="chat-container">
+        <div class="chat-header">
+          <h1>Ask Your AI Caddie</h1>
+          <p>Ask questions about your game in plain English. Powered by Ollama.</p>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-welcome">
+            <div class="chat-welcome-icon">🏌️</div>
+            <h3>Welcome!</h3>
+            <p>Try asking things like:</p>
+            <div class="chat-suggestions">
+              <button class="suggestion" onclick="askSuggestion(this)">What's my average driver carry distance?</button>
+              <button class="suggestion" onclick="askSuggestion(this)">How has my 3 Hybrid improved over time?</button>
+              <button class="suggestion" onclick="askSuggestion(this)">What should I work on to hit my driver farther?</button>
+              <button class="suggestion" onclick="askSuggestion(this)">Compare my attack angle between irons and driver</button>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-wrap">
+          <input type="text" id="chatInput" placeholder="Ask about your game..." autocomplete="off">
+          <button class="btn btn-primary" id="chatSend">Send</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Upload -->
+    <main class="content hidden" id="tab-upload">
+      <h1>Upload Session Data</h1>
+      <p class="section-desc">Drop your Garmin Golf CSV exports here to import new driving range sessions.</p>
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">📁</div>
+        <h3>Drag & Drop CSV Files</h3>
+        <p>or click to browse</p>
+        <input type="file" id="fileInput" accept=".csv" multiple hidden>
+      </div>
+      <div class="upload-help">
+        <h3>How to export from Garmin Golf</h3>
+        <ol>
+          <li>Open the <strong>Garmin Golf</strong> app on your phone</li>
+          <li>Go to <strong>Driving Range</strong> → select a session</li>
+          <li>Tap the <strong>export/share icon</strong> (↑)</li>
+          <li>Choose <strong>"Export as CSV"</strong></li>
+          <li>Save or share the file to your computer</li>
+          <li>Upload the CSV file here</li>
+        </ol>
+      </div>
+      <div id="uploadResults" class="hidden"></div>
+    </main>
+
+    <!-- Features -->
+    <main class="content hidden" id="tab-features">
+      <h1>Feature Requests</h1>
+      <p class="section-desc">AI agents can propose new analysis tools. You can also suggest features here.</p>
+      <div class="feature-form">
+        <input type="text" id="featureName" placeholder="Feature name (e.g. tempo_analysis)">
+        <textarea id="featureDesc" placeholder="Describe what this feature should do..." rows="3"></textarea>
+        <button class="btn btn-primary" id="featureSubmit">Propose Feature</button>
+      </div>
+      <div class="feature-list" id="featureList">
+        <p class="placeholder">Loading features...</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
